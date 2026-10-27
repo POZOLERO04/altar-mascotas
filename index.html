@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Altar de Mascotas</title>
+<meta name="theme-color" content="#2a1530">
+<meta name="description" content="Un altar digital para recordar a nuestras mascotas.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="iconos/icono-192.png" type="image/png">
+<link rel="apple-touch-icon" href="iconos/icono-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Altar">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,700;1,500&family=Caveat:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="papel-picado" aria-hidden="true"></div>
+
+<header class="encabezado">
+  <p class="pre">En memoria de quienes nos dieron amor sin condiciones</p>
+  <h1>Altar de mis Mascotas</h1>
+  <p class="sub">Encienda una vela, recuerde su nombre, y sienta que siguen aquí.</p>
+  <div class="acciones">
+    <button class="btn primario" id="btnAgregar">+ Agregar mascota</button>
+    <button class="btn" id="btnExportar" title="Descargar una copia con todas las fotos">Guardar respaldo</button>
+    <label class="btn" title="Restaurar desde un respaldo">
+      Cargar respaldo
+      <input type="file" id="inputImportar" accept="application/json" hidden>
+    </label>
+    <button class="btn" id="btnInstalar" hidden>📲 Instalar en el teléfono</button>
+    <button class="btn" id="btnWidget" title="Mostrar u ocultar el mini altar flotante">🕯️ Mini altar</button>
+  </div>
+</header>
+
+<main class="altar">
+  <section class="nivel nivel-retratos" id="retratos" aria-live="polite"></section>
+
+  <div class="vacio" id="vacio" hidden>
+    <div class="vela grande encendida"><span class="llama"></span></div>
+    <p>El altar está esperando.<br>Agregue la foto de su compañero para honrarlo.</p>
+    <button class="btn primario" id="btnAgregarVacio">+ Agregar la primera mascota</button>
+  </div>
+
+  <div class="mantel" aria-hidden="true">
+    <div class="ofrenda-fila">
+      <span class="flor"></span><span class="vela encendida"><span class="llama"></span></span>
+      <span class="flor"></span><span class="hueso">🦴</span><span class="flor"></span>
+      <span class="vela encendida"><span class="llama"></span></span><span class="flor"></span>
+      <span class="plato">🐾</span><span class="flor"></span>
+      <span class="vela encendida"><span class="llama"></span></span><span class="flor"></span>
+    </div>
+  </div>
+</main>
+
+<footer class="pie">
+  <p>Las fotos se guardan solo en este navegador. Use “Guardar respaldo” para no perderlas.</p>
+</footer>
+
+<div class="petalos" id="petalos" aria-hidden="true"></div>
+
+<aside class="widget" id="widget" hidden aria-label="Mini altar">
+  <div class="widget-barra" id="widgetBarra">
+    <span class="widget-titulo">Mini altar</span>
+    <button type="button" class="widget-btn" id="widgetMin" aria-label="Minimizar" title="Minimizar">–</button>
+  </div>
+  <button type="button" class="widget-foto" id="widgetFoto" title="Ver en el altar">
+    <img id="widgetImgA" alt="">
+    <img id="widgetImgB" alt="">
+  </button>
+  <div class="widget-info">
+    <span class="vela mini encendida" id="widgetVela"><span class="llama"></span></span>
+    <div>
+      <strong id="widgetNombre"></strong>
+      <small id="widgetFechas"></small>
+    </div>
+  </div>
+</aside>
+
+<button type="button" class="burbuja" id="burbuja" hidden aria-label="Abrir el mini altar" title="Abrir el mini altar">
+  <img id="burbujaImg" alt="">
+  <span class="vela mini encendida"><span class="llama"></span></span>
+</button>
+
+<dialog id="instruccionesIOS">
+  <div class="instrucciones">
+    <h2>Instalar en iPhone</h2>
+    <ol>
+      <li>Abra esta página en <strong>Safari</strong>.</li>
+      <li>Toque el botón <strong>Compartir</strong> (el cuadro con la flecha hacia arriba).</li>
+      <li>Elija <strong>“Agregar a pantalla de inicio”</strong>.</li>
+    </ol>
+    <div class="botones"><span class="espacio"></span><button class="btn primario" id="cerrarIOS">Entendido</button></div>
+  </div>
+</dialog>
+
+<dialog id="dialogo">
+  <form id="formulario" method="dialog">
+    <h2 id="tituloDialogo">Agregar al altar</h2>
+
+    <div class="zona-fotos" id="zonaFotos">
+      <div class="miniaturas" id="miniaturas">
+        <label class="agregar-foto" id="agregarFoto">
+          <span class="mas">+</span>
+          <span>Agregar fotos</span>
+          <input type="file" id="inputFoto" accept="image/*" multiple hidden>
+        </label>
+      </div>
+      <p class="ayuda" id="ayudaFotos">Puede elegir varias a la vez o arrastrarlas aquí. La primera es la principal.</p>
+    </div>
+
+    <div class="campos">
+      <label>Nombre *
+        <input name="nombre" required maxlength="40" placeholder="Ej. Canelo">
+      </label>
+      <label>Especie
+        <select name="especie">
+          <option value="🐶">Perro</option>
+          <option value="🐱">Gato</option>
+          <option value="🐰">Conejo</option>
+          <option value="🐦">Ave</option>
+          <option value="🐹">Hámster</option>
+          <option value="🐢">Tortuga</option>
+          <option value="🐟">Pez</option>
+          <option value="🐾">Otra</option>
+        </select>
+      </label>
+      <label>Año en que llegó a mi vida
+        <input type="number" name="llegada" min="1950" max="2100" step="1" inputmode="numeric" placeholder="Ej. 2011">
+      </label>
+      <label>Año en que partió
+        <input type="number" name="partida" min="1950" max="2100" step="1" inputmode="numeric" placeholder="Ej. 2024">
+      </label>
+      <label class="ancho">Lo que más le gustaba (su ofrenda)
+        <input name="ofrenda" maxlength="60" placeholder="Ej. Su pelota roja y el pollo">
+      </label>
+      <label class="ancho">Unas palabras para recordarle
+        <textarea name="mensaje" rows="3" maxlength="240" placeholder="Ej. Gracias por esperarme cada tarde en la puerta."></textarea>
+      </label>
+    </div>
+
+    <p class="error" id="error" hidden></p>
+
+    <div class="botones">
+      <button type="button" class="btn peligro" id="btnEliminar" hidden>Quitar del altar</button>
+      <span class="espacio"></span>
+      <button type="button" class="btn" id="btnCancelar">Cancelar</button>
+      <button type="submit" class="btn primario" id="btnGuardar">Colocar en el altar</button>
+    </div>
+  </form>
+</dialog>
+
+<script src="script.js"></script>
+</body>
+</html>
